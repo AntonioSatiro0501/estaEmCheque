@@ -1,14 +1,14 @@
 (defun verificaSePeca (caracter)
     (find caracter "tTcCbBdDrRpP"))
 
-(defun defineCasaVazia (n)
-    (cond ((<= n 0) nil)
-        (t (cons nil (defineCasaVazia (- n 1))))))
+(defun defineCasaVazia (i)
+    (cond ((<= i 0) nil)
+    (t (cons nil (defineCasaVazia (- i 1))))))
 
 (defun loopExtrairLinhas (i nlinhas)
     (cond ((>= i nlinhas) nil)
         (t (format t "Digite a linha ~a: " i)
-           (finish-output)
+            (finish-output)
             (let ((linha (read-line)))
                 (write linha)
                 (terpri)
@@ -23,13 +23,111 @@
 
 (defun defineMatriz (i linhas)
     (cond ((>= i 8) nil)
-        (t (let ((stringLinha (nth i linhas)))
-            (cons (defineLinha 0 0 stringLinha) (defineMatriz (+ i 1) linhas))))))
+    (t (let ((stringLinha (nth i linhas)))
+        (cons (defineLinha 0 0 stringLinha) (defineMatriz (+ i 1) linhas))))))
+
+(defun buscaColunaRei (i linha)
+  (cond ((>= i 8) nil)
+        ((eql (nth i linha) #\r) i)
+        (t (buscaColunaRei (+ i 1) linha ))))
+
+(defun buscaReiBranco (i matriz)
+    (cond ((>= i 8) nil)
+    (t (let ((c (buscaColunaRei 0 (nth i matriz))))
+            (cond (c (list i c))
+            (t (buscaReiBranco (+ i 1) matriz )))))))
+
+(defun verificaPecaBuscada (i linha peca)
+    (cond((eql (nth i linha) peca) peca)
+    (t nil)))
+
+(defun buscaDiagonalEsquerdaSuperior (linha coluna matriz)
+    (cond ((< linha 0) nil)
+    ((< coluna 0) nil)
+    ((null (nth coluna (nth linha matriz)))(buscaDiagonalEsquerdaSuperior (- linha 1) (- coluna 1) matriz))
+    ((verificaPecaBuscada coluna (nth linha matriz) #\D) #\D)
+    ((verificaPecaBuscada coluna (nth linha matriz) #\B) #\B)
+    (t nil)))
+
+(defun buscaDiagonalEsquerdaInferior (linha coluna matriz)
+    (cond ((> linha 7) nil)
+    ((< coluna 0) nil)
+    ((null (nth coluna (nth linha matriz)))(buscaDiagonalEsquerdaInferior (+ linha 1) (- coluna 1) matriz))
+    ((verificaPecaBuscada coluna (nth linha matriz) #\D) #\D)
+    ((verificaPecaBuscada coluna (nth linha matriz) #\B) #\B)
+    (t nil)))
+
+(defun buscaDiagonalDiereitaSuperior (linha coluna matriz)
+    (cond ((< linha 0) nil)
+    ((> coluna 7) nil)
+    ((null (nth coluna (nth linha matriz)))(buscaDiagonalDireitaSuperior (- linha 1) (+ coluna 1) matriz))
+    ((verificaPecaBuscada coluna (nth linha matriz) #\D) #\D)
+    ((verificaPecaBuscada coluna (nth linha matriz) #\B) #\B)
+    (t nil)))
+
+(defun buscaDiagonalDiereitaSInferior (linha coluna matriz)
+    (cond ((> linha 7) nil)
+    ((> coluna 7) nil)
+    ((null (nth coluna (nth linha matriz)))(buscaDiagonalDireitaInferior (+ linha 1) (+ coluna 1) matriz))
+    ((verificaPecaBuscada coluna (nth linha matriz) #\D) #\D)
+    ((verificaPecaBuscada coluna (nth linha matriz) #\B) #\B)
+    (t nil)))
+
+(defun buscaBispoRainha (posicaoRei matriz)
+    (cond   ((buscaDiagonalEsquerdaSuperior (- (nth 0 posicaoRei) 1) (- (nth 1 posicaoRei) 1) matriz))
+            ((buscaDiagonalEsquerdaInferior (+ (nth 0 posicaoRei) 1) (- (nth 1 posicaoRei) 1) matriz))
+            ((buscaDiagonalDireitaSuperior (- (nth 0 posicaoRei) 1) (+ (nth 1 posicaoRei) 1) matriz))
+            ((buscaDiagonalDireitaInferior (+ (nth 0 posicaoRei) 1) (+ (nth 1 posicaoRei) 1) matriz))
+            (t nil)))
+
+(defun buscaDireita (linha coluna matriz)
+    (cond ((> coluna 7) nil)
+    ((null (nth coluna (nth linha matriz)))(buscaDireita linha (+ coluna 1) matriz))
+    ((verificaPecaBuscada coluna (nth linha matriz) #\D) #\D)
+    ((verificaPecaBuscada coluna (nth linha matriz) #\T) #\T)
+    (t nil)))
+
+(defun buscaEsquerda (linha coluna matriz)
+    (cond ((< coluna 0) nil)
+    ((null (nth coluna (nth linha matriz)))(buscaEsquerda linha (- coluna 1) matriz))
+    ((verificaPecaBuscada coluna (nth linha matriz) #\D) #\D)
+    ((verificaPecaBuscada coluna (nth linha matriz) #\T) #\T)
+    (t nil)))
+
+(defun buscaCima (linha coluna matriz)
+    (cond ((< linha 0) nil)
+    ((null (nth coluna (nth linha matriz)))(buscaCima (- linha 1) coluna matriz))
+    ((verificaPecaBuscada coluna (nth linha matriz) #\D) #\D)
+    ((verificaPecaBuscada coluna (nth linha matriz) #\T) #\T)
+    (t nil)))
+
+(defun buscaBaixo (linha coluna matriz)
+    (cond ((> linha 7) nil)
+    ((null (nth coluna (nth linha matriz)))(buscaBaixo (+ linha 1) coluna matriz))
+    ((verificaPecaBuscada coluna (nth linha matriz) #\D) #\D)
+    ((verificaPecaBuscada coluna (nth linha matriz) #\T) #\T)
+    (t nil)))
+
+(defun buscaTorreRaina (posicaoRei matriz)
+    (cond   ((buscaDireita (nth 0 posicaoRei) (+ (nth 1 posicaoRei) 1) matriz))
+            ((buscaCima (- (nth 0 posicaoRei) 1) (nth 1 posicaoRei) matriz))
+            ((buscaEsquerda (nth 0 posicaoRei) (- (nth 1 posicaoRei) 1) matriz))
+            ((buscaBaixo (+ (nth 0 posicaoRei) 1) (nth 1 posicaoRei) matriz))
+            (t nil)))
+
+(defun auxPeao ())
+
+(defun buscaPeao (posicaoRei matriz)
+    (cond ((< (- (nth 0 posicaoRei) 1) 0) nil)
+    ((> (- (nth 1 posicaoRei) 1) 0) verificaPecaBuscada (nth 1 posicaoRei) (nth (nth 0 posicaoRei) matriz) #\P)
+    ((< (+ (nth 1 posicaoRei) 1) 7) verificaPecaBuscada (nth 1 posicaoRei) (nth (nth 0 posicaoRei) matriz) #\P)
+    (t nil)))
+
+;(defun buscaCavalo)
+
+
+
 
 (defvar *linhas* (loopExtrairLinhas 0 8))
 (defvar *matriz* (defineMatriz 0 *linhas*))
-
-; https://www.tutorialspoint.com/lisp/lisp_variables.htm\
-; https://www.tutorialspoint.com/lisp/lisp_input_output.htm
-; https://www.tutorialspoint.com/lisp/lisp_string_access_char.htm
-; https://stackoverflow.com/questions/52241906/check-if-character-is-in-string
+(defvar *posicaoRei* (buscaReiBranco 0 *matriz*))
