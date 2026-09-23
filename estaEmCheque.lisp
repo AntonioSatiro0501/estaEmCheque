@@ -115,13 +115,18 @@
             ((buscaBaixo (+ (nth 0 posicaoRei) 1) (nth 1 posicaoRei) matriz))
             (t nil)))
 
-(defun auxPeao ())
+(defun buscaPeaoLado (linha coluna matriz)
+    (cond ((< coluna 0) nil)
+    ((> coluna 7) nil)
+    (t (verificaPecaBuscada coluna (nth linha matriz) #\P))))
 
 (defun buscaPeao (posicaoRei matriz)
-    (cond ((< (- (nth 0 posicaoRei) 1) 0) nil)
-    ((> (- (nth 1 posicaoRei) 1) 0) verificaPecaBuscada (nth 1 posicaoRei) (nth (nth 0 posicaoRei) matriz) #\P)
-    ((< (+ (nth 1 posicaoRei) 1) 7) verificaPecaBuscada (nth 1 posicaoRei) (nth (nth 0 posicaoRei) matriz) #\P)
-    (t nil)))
+    (let ((linha (- (nth 0 posicaoRei) 1))
+    (colunaEsq (- (nth 1 posicaoRei) 1))
+    (colunaDir (+ (nth 1 posicaoRei) 1)))
+    (cond ((< linha 0) nil)
+    (t (cond ((buscaPeaoLado linha colunaEsq matriz) #\P)
+        (t (buscaPeaoLado linha colunaDir matriz)))))))
 
 ;(defun buscaCavalo)
 
@@ -131,3 +136,9 @@
 (defvar *linhas* (loopExtrairLinhas 0 8))
 (defvar *matriz* (defineMatriz 0 *linhas*))
 (defvar *posicaoRei* (buscaReiBranco 0 *matriz*))
+
+
+; https://www.tutorialspoint.com/lisp/lisp_variables.htm\
+; https://www.tutorialspoint.com/lisp/lisp_input_output.htm
+; https://www.tutorialspoint.com/lisp/lisp_string_access_char.htm
+; https://stackoverflow.com/questions/52241906/check-if-character-is-in-string
