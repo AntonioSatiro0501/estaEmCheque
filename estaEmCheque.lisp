@@ -12,7 +12,6 @@
         (t (format t "Digite a linha ~a: " i)
             (finish-output)
             (let ((linha (read-line)))
-                (write linha)
                 (terpri)
                 (append (list linha) (loopExtrairLinhas (+ i 1) nlinhas))))))
 
