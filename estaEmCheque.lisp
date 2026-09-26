@@ -178,7 +178,7 @@
 ;tcbdrbct
 ;
 ;
-; TCBDRBCT representa a linha 1
+; TCBDRBCT representa a linha 0
 ; tcbdrbct representa a linha 7
 
 
