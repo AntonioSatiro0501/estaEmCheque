@@ -7,20 +7,12 @@
     (cond ((<= i 0) nil)
     (t (cons nil (defineCasaVazia (- i 1))))))
 
-(defun loopExtrairLinhas (i nlinhas) ; loop para escrita das linhas
-    (cond ((>= i nlinhas) nil)
-        (t (format t "Digite a linha ~a: " i)
-            (finish-output)
-            (let ((linha (read-line)))
-                (terpri)
-                (append (list linha) (loopExtrairLinhas (+ i 1) nlinhas))))))
-
 (defun defineLinha (i posicaoLeitura stringLinha) ; Controi as linhas do tabuleiro a partir do input
     (cond ((>= i 8) nil)
-        ((verificaSePeca (char stringLinha posicaoLeitura))
-        (cons (char stringLinha posicaoLeitura) (defineLinha (+ i 1) (+ posicaoLeitura 1) stringLinha)))     
-            (t(let ((n (digit-char-p (char stringLinha posicaoLeitura))))
-                (append (defineCasaVazia n) (defineLinha (+ i n) (+ posicaoLeitura 1) stringLinha))))))
+    ((verificaSePeca (char stringLinha posicaoLeitura))
+    (cons (char stringLinha posicaoLeitura) (defineLinha (+ i 1) (+ posicaoLeitura 1) stringLinha)))     
+    (t(let ((n (digit-char-p (char stringLinha posicaoLeitura))))
+        (append (defineCasaVazia n) (defineLinha (+ i n) (+ posicaoLeitura 1) stringLinha))))))
 
 (defun defineMatriz (i linhas) ; Constroi a matriz do tabuleiro
     (cond ((>= i 8) nil)
@@ -29,14 +21,14 @@
 
 (defun buscaColunaRei (i linha) ; Busca coluna do rei branco
     (cond ((>= i 8) nil)
-        ((eql (nth i linha) #\r) i)
-        (t (buscaColunaRei (+ i 1) linha ))))
+    ((eql (nth i linha) #\r) i)
+    (t (buscaColunaRei (+ i 1) linha ))))
 
 (defun buscaReiBranco (i matriz) ; Busca posição do rei branco
     (cond ((>= i 8) nil)
     (t (let ((c (buscaColunaRei 0 (nth i matriz))))
-            (cond (c (list i c))
-            (t (buscaReiBranco (+ i 1) matriz )))))))
+        (cond (c (list i c))
+        (t (buscaReiBranco (+ i 1) matriz )))))))
 
 (defun verificaPecaBuscada (i linha peca) ; Verifica se a posicao definida possui a peça buscada
     (cond((eql (nth i linha) peca) peca)
@@ -155,35 +147,51 @@
     ((buscaBispoRainha posicaoRei matriz) "Esta em cheque")
     (t nil)))
 
-(defvar *linhas* (loopExtrairLinhas 0 8))
-(defvar *matriz* (defineMatriz 0 *linhas*))
-(defvar *posicaoRei* (buscaReiBranco 0 *matriz*))
-(defvar *cheque* (estaEmCheque *posicaoRei* *matriz*))
+(defun chess (linhas) ; Recebe a lista de linhas do tabuleiro e retorna t ou nil se o rei branco esta em xeque
+    (let* ((matriz (defineMatriz 0 linhas))
+    (posicaoRei (buscaReiBranco 0 matriz)))
+    (cond ((estaEmCheque posicaoRei matriz) t)
+    (t nil))))
 
-(cond ((null *cheque*) (format t "Nao esta em cheque"))
-    (t (format t "Esta em cheque" )))
-
-; Funcionação
+; Funcionamento:
+;
+;
+; Pecas:    t -> torre branca
+;           T -> torre preta
+;           c -> cavalo branco
+;           C -> cavalo preto
+;           b -> bispo branco
+;           B -> bispo preto
+;           d -> dama branca
+;           D -> dama preta
+;           r -> rei branco
+;           R -> rei preto (não considerado durante análise do em cheque)
+;           p -> peao branco
+;           P -> peao preto
 ;
 ; Tabuleiro deve ser interpretado com as peças pretas acima e as brancas na parte inferior
 ; Exemplo entrada:
 ;
-;TCBDRBCT
-;PPPPPPPP
-;8
-;8
-;8
-;8
-;pppppppp
-;tcbdrbct
+; (chess (list "TCBDRBCT" "PPPPPPPP" "8" "8" "8" "8" "pppppppp" "tcbdrbct"))
 ;
+; TCBDRBCT representa a linha 0, topo do tabuleiro
+; tcbdrbct representa a linha 7, fim do tabuleiro
+; 
+; *ATENCAO* colocar aspas idependentemente da linha ter entrada composta apenas de valores numéricos 
+; Escrever list para que a lista das linhas não sejam interpretadas como uma função
 ;
-; TCBDRBCT representa a linha 0
-; tcbdrbct representa a linha 7
-
-
-; Fontes
-
+; Outros exemplo de entrada:
+;
+;(chess (list "8" "8" "8" "2P5" "3r4" "8" "8" "8")) -> está em cheque por peão
+;(chess (list "8" "8" "8" "2p5" "3r4" "8" "8" "8")) -> não está em cheque
+;(chess (list "8" "8" "8" "26" "3r4" "1C6" "8" "8")) -> está em cheque por cavalo
+;
+; Lista de comandos para iniciar código via codeSpace Github:   sbcl
+;                                                               (load "estaEmCheque.lisp")
+;                                                               (chess (list "TCBDRBCT" "PPPPPPPP" "8" "8" "8" "8" "pppppppp" "tcbdrbct"))
+;
+; Fontes:
+;
 ; https://www.tutorialspoint.com/lisp/lisp_variables.htm\
 ; https://www.tutorialspoint.com/lisp/lisp_input_output.htm
 ; https://www.tutorialspoint.com/lisp/lisp_string_access_char.htm
