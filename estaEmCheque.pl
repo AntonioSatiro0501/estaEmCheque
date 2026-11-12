@@ -81,4 +81,22 @@ auxProcuraDiagonalDirInf(['b'|_], C, C, _, _, 'b').
 auxProcuraDiagonalDirInf(['.'|_], C, C, T, LN, R):- procuraDiagonalDirInf(LN, C, T, R).
 auxProcuraDiagonalDirInf([_|Y], C, Cr, T,LN, R):- C < Cr, C2 is C + 1, auxProcuraDiagonalDirInf(Y, C2, Cr, T, LN, R).
 
+procuraCavalo(L, C, LR, CR, T, R):- L =:= LR - 2, C =:= CR - 1, devolveLinha(T, L, LT), auxBuscaCavalo(LT, C, R).
+procuraCavalo(L, C, LR, CR, T, R):- L =:= LR + 2, C =:= CR - 1, devolveLinha(T, L, LT), auxBuscaCavalo(LT, C, R).
+procuraCavalo(L, C, LR, CR, T, R):- L =:= LR - 2, C =:= CR + 1, devolveLinha(T, L, LT), auxBuscaCavalo(LT, C, R).
+procuraCavalo(L, C, LR, CR, T, R):- L =:= LR + 2, C =:= CR + 1, devolveLinha(T, L, LT), auxBuscaCavalo(LT, C, R).
+procuraCavalo(L, C, LR, CR, T, R):- L =:= LR - 1, C =:= CR - 2, devolveLinha(T, L, LT), auxBuscaCavalo(LT, C, R).
+procuraCavalo(L, C, LR, CR, T, R):- L =:= LR + 1, C =:= CR - 2, devolveLinha(T, L, LT), auxBuscaCavalo(LT, C, R).
+procuraCavalo(L, C, LR, CR, T, R):- L =:= LR - 1, C =:= CR + 2, devolveLinha(T, L, Lt), auxBuscaCavalo(LT, C, R).
+procuraCavalo(L, C, LR, CR, T, R):- L =:= LR + 1, C =:= CR + 2, devolveLinha(T, L, Lt), auxBuscaCavalo(LT, C, R).
+procuraCavalo(L, 8, LR, CR, T, R):- L < 8, L2 is L + 1, procuraCavalo(L2, 1, LR, CR, T, R).
+procuraCavalo(L, C, LR, CR, T, R):- C < 8, C2 is L + 1, procuraCavalo(L, C2, LR, CR, T, R).
+auxBuscaCavalo(['c'|_], 1, 'c').
+auxBuscaCavalo([X|Y], N, R):- N > 1, N2 is N - 1, auxBuscaCavalo(Y, N2, R).
+
+procuraPeao(LR, CR, T, R):- L2 is LR - 1, CP1 is CR - 1, CP2 is CR + 1, devolveLinha(T, L2, LT), auxPeao(LT, CP1, CP2, R).
+auxPeao(['p'|_], 1, P2, 'p').
+auxPeao(['p'|_], _, 1, 'p').
+auxPeao([_|Y], P1, P2, R):- CP2 > 0, P11 is P1 - 1, P22 is P2 - 1, auxPeao(Y, P11, P22, R).  
+
 teste(T,R):- preenche_tabuleiro(T,T2), procuraReiTabuleiro(T2,1,R).
