@@ -39,8 +39,8 @@ div([X|Y], [X|W], Z) :- div(Y, W, Z).
 inv([], []).
 inv([C|X], R) :- inv(X, R1), append(R1, [C], R).
 
-procuraLinhaEsq(N, T, R):- devolveLinha(T, N, L), div(L, AntesRei, _), inv(AntesRei, LinhaInvertida), auxProcuraLinha(LinhaInvertida, R).
-procuraLinhaDir(N, T, R):- devolveLinha(T,N,L), div(L, _, DepoisRei), auxProcuraLinha(DepoisRei, R).
+procuraLinhaEsq(LR, T, R):- devolveLinha(T, LR, L), div(L, AntesRei, _), inv(AntesRei, LinhaInvertida), auxProcuraLinha(LinhaInvertida, R).
+procuraLinhaDir(LR, T, R):- devolveLinha(T,LR,L), div(L, _, DepoisRei), auxProcuraLinha(DepoisRei, R).
 auxProcuraLinha(['.'|X], R):- auxProcuraLinha(X,R).
 auxProcuraLinha(['d'|_], 'd').
 auxProcuraLinha(['t'|_], 't').
@@ -99,4 +99,24 @@ auxPeao(['p'|_], 1, P2, 'p').
 auxPeao(['p'|_], _, 1, 'p').
 auxPeao([_|Y], P1, P2, R):- CP2 > 0, P11 is P1 - 1, P22 is P2 - 1, auxPeao(Y, P11, P22, R).  
 
-teste(T,R):- preenche_tabuleiro(T,T2), procuraReiTabuleiro(T2,1,R).
+procuraReiPreto(LR, CR, T, R):- L2 is LR - 1, CP1 is CR - 1, CP2 is CR + 1, devolveLinha(T, L2, LT), auxReiPreto(LT, CP1, CR, CP2, R).
+procuraReiPreto(LR, CR, T, R):- L2 is LR + 1, CP1 is CR - 1, CP2 is CR + 1, devolveLinha(T, L2, LT), auxReiPreto(LT, CP1, CR, CP2, R).
+procuraReiPreto(LR, CR, T, R):- CP1 is CR - 1, CP2 is CR + 1, devolveLinha(T, LR, LT), auxReiPreto(LT, CP1, CR, CP2, R).
+auxReiPreto(['r'|_], 1, _, _, 'r').
+auxReiPreto(['r'|_], _, 1, _, 'r').
+auxReiPreto(['r'|_], _, _, 1, 'r').
+auxReiPreto([_|Y], P1, P2, P3, R):- P3 > 0, P1 is P11, P2 is P22, P3 is P33, auxReiPreto(Y, P11, P22, P33, R).
+
+emXeque(T, LR, _):- procuraLinhaEsq(LR, T, _).
+emXeque(T, LR, _):- procuraLinhaDir(LR, T, _).
+emXeque(T, LR, CR):- procuraColunaCima(LR, CR, T, _).
+emXeque(T, LR, CR):- procuraColunaBaixo(LR, CR, T, _).
+emXeque(T, LR, CR):- procuraDiagonalEsqSup(LR, CR, T, _).
+emXeque(T, LR, CR):- procuraDiagonalEsqInf(LR, CR, T, _).
+emXeque(T, LR, CR):- procuraDiagonalDirSup(LR, CR, T, _).
+emXeque(T, LR, CR):- procuraDiagonalDirInf(LR, CR, T, _).
+emXeque(T, LR, CR):- procuraCavalo(1, 1, LR, CR, T, _).
+emXeque(T, LR, CR):- procuraPeao(LR, CR, T, _).
+emXeque(T, LR, CR):- procuraReiPreto(LR, CR, T, _).
+
+chess(TB):- preenche_tabuleiro(TB, T), procuraReiTabuleiro(T, 1, [LR, CR]), emXeque(T, LR, CR).
