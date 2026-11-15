@@ -2,8 +2,9 @@
   EP2 - Paradigmas de Programação - Projeto 2: Está em xeque?
   Antônio Costa Satiro de Souza
 
-  Como executar via SWI-Prolog/SWISH:
+  Como executar via SWI-Prolog:
   
+    swipl -s estaEmXeque10723636.pl
     ?- chess(["tcbdrbct","pppppppp",8,8,8,8,"PPPPPPPP","TCBDRBCT"]).
     
     Exemplos de Entrada:
